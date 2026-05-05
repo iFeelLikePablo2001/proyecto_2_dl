@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module tb_clock_enable;
 
 logic clk;
@@ -13,6 +15,9 @@ clock_enable #(.MAX_COUNT(5)) DUT (
 always #5 clk = ~clk;
 
 initial begin
+    $dumpfile("tb_clock_enable.vcd");
+    $dumpvars(0, tb_clock_enable);
+
     clk = 0;
     reset = 1;
 

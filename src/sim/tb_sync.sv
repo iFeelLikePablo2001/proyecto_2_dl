@@ -13,6 +13,9 @@ sync DUT (
 always #5 clk = ~clk;
 
 initial begin
+    $dumpfile("tb_sync.vcd");
+    $dumpvars(0, tb_sync);
+    
     clk = 0;
     async_in = 0;
 

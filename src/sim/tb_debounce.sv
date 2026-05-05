@@ -15,6 +15,9 @@ debounce #(.LIMIT(4)) DUT (
 always #5 clk = ~clk;
 
 initial begin
+    $dumpfile("tb_debounce.vcd");
+    $dumpvars(0, tb_debounce);
+    
     clk = 0;
     reset = 1;
     noisy_in = 0;

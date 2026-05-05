@@ -15,18 +15,18 @@ SOURCES := $(wildcard ../design/*.v ../design/*.sv) #Todas las fuentes .v o .sv 
 
 #Fuente de simulacion
 #aca va el testbench que quieran simular
-TESTBENCH = ../sim/tb_clock_enable.sv
+TESTBENCH = ../sim/tb_debounce.sv
 
 # Constraints para el proyecto
 #aca va el archivo de constraints del proyecto
 CONSTRAINTS = ../constr/CONSTRAINTS.cst
 
 #el top se indica sin la extension .v, esto hace referencia al nombre que le pusieron al módulo y no al archivo en si.
-TOP_DESIGN = top.sv
-TOP_TB     = tb_top.sv
+TOP_DESIGN = top
+TOP_TB     = tb_debounce
 
 #nombre del vcd que va a generar el tb
-VCD_FILE = ${test_clock_enable}.vcd
+VCD_FILE = tb_debounce.vcd
 
 
 all: synth pnr bitstream load

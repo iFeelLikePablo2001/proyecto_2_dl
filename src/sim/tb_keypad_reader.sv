@@ -24,6 +24,8 @@ keypad_reader DUT(
 always #5 clk = ~clk;
 
 initial begin
+    $dumpfile("tb_keypad_reader.vcd");
+    $dumpvars(0, tb_keypad_reader);
 
     clk = 0;
     reset = 1;
