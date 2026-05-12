@@ -1,3 +1,7 @@
+// key_decoder.sv
+// Convierte la posición de fila/columna detectada en el valor de la tecla.
+// Mapea cada combinación de row/col a un valor numérico o a códigos especiales
+// como A y B para funciones de control.
 module key_decoder (
     input logic [1:0] row,
     input logic [1:0] col,

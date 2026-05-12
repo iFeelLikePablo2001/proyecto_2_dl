@@ -1,3 +1,9 @@
+// fsm_teclado.sv
+// Máquina de estados para controlar la entrada de teclado.
+// - IDLE: espera una tecla válida para comenzar a capturar A.
+// - INGRESO_A: captura el primer número hasta que se presiona A.
+// - INGRESO_B: captura el segundo número hasta que se presiona B.
+// - MOSTRAR: activa la señal de cálculo / visualización y espera reinicio con C.
 module fsm_teclado (
     input  logic        clk,        // 27 MHz
     input  logic        rst_n,      // reset activo en bajo

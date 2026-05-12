@@ -1,3 +1,8 @@
+// top.sv
+// Módulo superior que integra la lectura del teclado, el decodificador,
+// el almacenamiento del valor de la tecla y el multiplexado de la pantalla.
+// Genera dos enable de reloj: uno para el escaneo de teclado y otro para el
+// refresco de los dígitos de la pantalla 7 segmentos.
 module top(
 
     input logic clk,
