@@ -1,3 +1,7 @@
+// dispay_control.sv
+// Selecciona qué dígito de datos mostrar en el momento actual.
+// Recibe el índice del dígito activo y entrega el valor correspondiente
+// (unidades, decenas, centenas o miles) para el multiplexado de pantalla.
 module display_control (
 
     input logic active_display,
