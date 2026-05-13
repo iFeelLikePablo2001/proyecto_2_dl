@@ -46,6 +46,19 @@ logic capturando_A;
 logic capturando_B;
 logic ejecutar_suma;
 
+
+//////////////////////////////////////////////////////
+// NUMBER STORAGE
+//////////////////////////////////////////////////////
+
+logic [9:0] numero_A;
+logic [9:0] numero_B;
+
+logic listo_A;
+logic listo_B;
+
+logic [10:0] resultado;
+
 //////////////////////////////////////////////////////
 // CLOCK ENABLES
 //////////////////////////////////////////////////////
@@ -139,31 +152,90 @@ mux_display mux0 (
     .active_display(active_display)
 );
 
+
+
+
+capturador_numero capA (
+
+    .clk(clk),
+    .rst_n(~reset),
+
+    .habilitado(capturando_A),
+
+    .tecla_valida(key_valid),
+
+    .tecla(key_value),
+
+    .numero_bcd(numero_A),
+
+    .listo(listo_A)
+);
+
+
+capturador_numero capB (
+
+    .clk(clk),
+    .rst_n(~reset),
+
+    .habilitado(capturando_B),
+
+    .tecla_valida(key_valid),
+
+    .tecla(key_value),
+
+    .numero_bcd(numero_B),
+
+    .listo(listo_B)
+);
+
+//////////////////////////////////////////////////////
+// ADDER
+//////////////////////////////////////////////////////
+
+assign resultado = numero_A + numero_B;
+
 //////////////////////////////////////////////////////
 // DISPLAY CONTENT
 //////////////////////////////////////////////////////
 
 always_comb begin
 
+    digit_out = 4'd0;
+
     case(active_display)
 
-        1'b0: digit_out = key_value;
+        //////////////////////////////////////////////////
+        // DISPLAY DERECHO
+        //////////////////////////////////////////////////
+
+        1'b0: begin
+
+            if(ejecutar_suma)
+                digit_out = resultado % 10;
+
+            else if(capturando_B)
+                digit_out = numero_B;
+
+            else
+                digit_out = numero_A;
+
+        end
+
+        //////////////////////////////////////////////////
+        // DISPLAY IZQUIERDO
+        //////////////////////////////////////////////////
 
         1'b1: begin
 
-            if(capturando_A)
-                digit_out = 4'd1;
-
-            else if(capturando_B)
-                digit_out = 4'd2;
-
-            else if(ejecutar_suma)
-                digit_out = 4'd3;
+            if(ejecutar_suma)
+                digit_out = resultado / 10;
 
             else
                 digit_out = 4'd0;
 
         end
+
+        default: digit_out = 4'd0;
 
     endcase
 
