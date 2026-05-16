@@ -3,7 +3,7 @@
 
 ## Integrantes
 - Kevin Josué Mora Sobalvarro
-- Pabro Cabrera Montealegre
+- Pablo Cabrera Montealegre
 
 ## Introduccion 
 
@@ -28,7 +28,7 @@ En este proyecto se implementa un sistema digital sincrónco que realiza la acap
 
 ### Arquitectura general
 
-![Diagrama General](images/block_diagram.png)
+![Diagrama General](images/block_diagram.jpeg)
 
 El flujo general del sistema comienza con la captura de datos desde el teclado hexadecimal como se puede observar, para posteriormente que las señales pasen por procesos de sincronización y debounce para evitar los rebotes mecánicos y metastabilidad. La FSM controla la captura secuencial de los números A y B, habilitando posteriormente la unidad arimética para realizar la suma y enviando luego el resultado al subsistema de displays.
 
@@ -62,7 +62,7 @@ En este caso, el módulo recibe una señal de entrada noisy_in, que representa u
 
 ##### Análisis wv
 
-![tb_debounce](images/debounce.png)
+![tb_debounce](images/tb_debounce.png)
 
 clk: senal del reloj definida anteriormente
 LIMIT: limite del contador, por lo tanto cuando este llegue a este numero, el valor de clean_out cambia a 1 ya que es estable.
@@ -258,3 +258,98 @@ Tomando en cuenta el tamaño moderado del diseño, ausencia de bloques de proces
 
 Por supuesto esto tomando en cuenta los módulos desarrollados individualmente como la FSM y controldor de displays que vienen a ser lógica digital de complejidad moderada que la componen Registros secuenciales, Multiplexado de displays, Lógica Combinacional básica, etc.
 
+## Ejercicios adicionales 
+
+![Contador sincronico](images/contador_circ.jpeg)
+
+### Contador sincronico
+
+#### Descripcion y funcionamiento
+
+En este ejercicio se implementa un sistema de conteo síncrono utilizando dos contadores 74LS163 conectados en cascada. El objetivoes analizar el comportamiento temporal mediante un analizador lógico.
+
+El circuito fue alimentado con una señal de reloj generada desde la FPGA crando un divisor de frecuencia. Los dos contadores se conectaron de forma que el primer contador menos manejara los primeros cuatro bits y el contador más significativo extendiera el conteo hasta ocho bits totales. La conexión entre ambos dispositivos se realizó utilizando se realiza usando la salida RCO del primer contador, y la entrada de habilitación T del segundo contador. Esto permite que el segundo contador incremente únicamente cuando el primero completa un ciclo completo de conteo.
+
+#### Analisis de resultados
+
+![Analizador logico](images/scope_0.png)
+
+Por problemas de conexiones no se pudo obtener el resultado obtenido donde se supone que cada una de las puntas debia de ir incrementando el conteo total hasta 8 bits diferentes
+
+#### Preguntas
+
+
+1. ¿Qué hace la salida RCO en un 74LS163?¿Por qué RCO y T están conectadas entre los dos contadores y cómo funciona esta conexión?
+
+La salida RCO es una señal de acarreo que indica cuándo el contador llegó a su valor máximo. En un contador de 4 bits, el valor máximo es 1111. Cuando el contador alcanza este valor y las entradas de habilitación están activas, la señal RCO cambia a estado alto dando inicio al segundo contador en cascada.
+
+2. ¿Cuál es la diferencia entre las entradas T y P del 74LS163?
+
+La entrada P habilita el conteo interno del contador. Si P está en bajo, el contador no avanz mientra que la entrada T también habilita el conteo, pero además controla la generación de la señal RCO. Por eso T se usa para conectar contadores en cascada.
+
+3. ¿Cuánto toma luego del flanco positivo de reloj para que un flip-flop cambie de estado?
+
+El cambio no ocurre instantáneamente como lo hemos demostrado durante el proyecto. Después del flanco positivo del reloj existe un pequeño retardo. Este lleva por nombre tiepo de propagacion y es debido a caracteristicas fisicas de los componentes.
+
+4. ¿Importa cuál bit de salida se escoge? Explique.
+
+Sí importa. Los bits menos significativos cambian más rápido y con mayor frecuencia mientras que los bits más significativos dependen de más porcesos internos y pueden presentar un mayor tiempo de propagacion.
+
+5. ¿Por qué pueden aparecer fallas o glitches en la salida RCO?
+
+Los glitches aparecen porque los bits internos del contador no cambian exactamente al mismo tiempo. Durante cambios grandes como por ejemplo de 1111 de vuevo a 0000 mediante los cuales pueden producirse pulsos muy cortos o incorrectos en  RCO debido a los tiempos de propagacion
+
+6. ¿Por qué es difícil observar estas fallas?
+
+Estas fallas duran muy poco tiempo y suelen ocurrir en momentos exactos por lo que puede ser dificil encontrarlos
+
+### Cerrojo SR con compuetas NAND
+
+#### Descripción general y funcionamiento
+
+El cerrojo SR es un circuito secuencial construido utilizando compuertas NAND. Su principal característica es que puede almacenar un bit de información, manteniendo su salida incluso después de que las entradas cambian. Este tiene 3 entradas: set, reset y clk junto con dos salidas Q y Q'. Como es un cerrojo sincronizado, las entradas solamente afectan la salida cuando la señal de reloj se encuentra en estado alto.
+
+El funcionamiento del cerrojo depende del estado de las entradas S, R y CLK.
+
+Cuando CLK está en bajo el circuito mantiene el último valor almacenado aunque las entradas cambien y cuando el reloj está en alto las entradas pueden modificar el estado del cerrojo.
+
+#### Circuito
+
+![Compuerta SR sincronizada](images/sr.png)
+
+#### Tabla de verdad
+
+| CLK | S | R | Q(next) | Descripción |
+|---|---|---|---|---|
+| 0 | X | X | Q | Mantiene estado |
+| 1 | 0 | 0 | Q | Mantiene estado |
+| 1 | 1 | 0 | 1 | Set |
+| 1 | 0 | 1 | 0 | Reset |
+| 1 | 1 | 1 | Inválido |
+
+#### Resultados obtenidos
+
+Para S=0 R=0
+
+![Analisis logico](images/00.png)
+
+Para S=0 R=1
+
+![Analisis logico](images/01.png)
+
+Para S=1 R=0
+
+![Analisis logico](images/10.png)
+
+Para S=1 R=1
+
+![Analisis logico](images/11.png)
+
+#### Funcionalidad del cerrojo
+
+El cerrojo SR funciona como una memoria básica capaz de almacenar un único bit de información dependiendo de CLK. Basicamente mantiene la información almacenada hasta que una nueva instrucción de Set o Reset modifique el estado en un momento valido CLK.
+
+#### Posibles utilidades
+
+flip-flops, registros, memorias digitales,
+almacenamiento temporal de datos, sistemas secuenciales, circuitos de control, sincronización de señales.
